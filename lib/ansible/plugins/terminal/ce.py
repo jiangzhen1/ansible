@@ -30,6 +30,8 @@ class TerminalModule(TerminalBase):
     terminal_stdout_re = [
         re.compile(r'[\r\n]?<.+>(?:\s*)$'),
         re.compile(r'[\r\n]?\[.+\](?:\s*)$'),
+        re.compile(r'[\r\n]?Please enter old password:(?:\s*)$'),
+        re.compile(r'[\r\n]?The password needs to be changed. Change now\? \[Y/N\]:(?:\s*)$')
     ]
 
     terminal_stderr_re = [

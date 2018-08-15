@@ -376,8 +376,7 @@ class NetworkConfig(object):
             for line in lines:
                 item = ConfigLine(line)
                 item.raw = line
-                if item not in self.items:
-                    self.items.append(item)
+                self.items.append(item)
 
         else:
             for index, p in enumerate(parents):

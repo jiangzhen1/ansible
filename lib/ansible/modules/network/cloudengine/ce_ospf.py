@@ -442,7 +442,7 @@ class OSPF(object):
 
         # get process base info
         root = ElementTree.fromstring(xml_str)
-        ospfsite = root.find("data/ospfv2/ospfv2comm/ospfSites/ospfSite")
+        ospfsite = root.find("ospfv2/ospfv2comm/ospfSites/ospfSite")
         if ospfsite:
             for site in ospfsite:
                 if site.tag in ["processId", "routerId", "vrfName"]:
@@ -450,7 +450,7 @@ class OSPF(object):
 
         # get Topology info
         topo = root.find(
-            "data/ospfv2/ospfv2comm/ospfSites/ospfSite/ProcessTopologys/ProcessTopology")
+            "ospfv2/ospfv2comm/ospfSites/ospfSite/ProcessTopologys/ProcessTopology")
         if topo:
             for eles in topo:
                 if eles.tag in ["maxLoadBalancing"]:
@@ -459,7 +459,7 @@ class OSPF(object):
         # get nexthop info
         ospf_info["nexthops"] = list()
         nexthops = root.findall(
-            "data/ospfv2/ospfv2comm/ospfSites/ospfSite/ProcessTopologys/ProcessTopology/nexthopMTs/nexthopMT")
+            "ospfv2/ospfv2comm/ospfSites/ospfSite/ProcessTopologys/ProcessTopology/nexthopMTs/nexthopMT")
         if nexthops:
             for nexthop in nexthops:
                 nh_dict = dict()
@@ -471,7 +471,7 @@ class OSPF(object):
         # get areas info
         ospf_info["areas"] = list()
         areas = root.findall(
-            "data/ospfv2/ospfv2comm/ospfSites/ospfSite/areas/area")
+            "ospfv2/ospfv2comm/ospfSites/ospfSite/areas/area")
         if areas:
             for area in areas:
                 area_dict = dict()

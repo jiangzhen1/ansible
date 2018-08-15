@@ -460,6 +460,8 @@ class Connection(NetworkConnectionBase):
                 if match:
                     self._matched_pattern = regex.pattern
                     self._matched_prompt = match.group()
+                    if self._terminal.terminal_stdout_re.index(regex) == 3:
+                        self.exec_command('N')
                     if not errored_response:
                         return True
 

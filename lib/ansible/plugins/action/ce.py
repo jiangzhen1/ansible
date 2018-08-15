@@ -48,42 +48,39 @@ class ActionModule(_ActionModule):
 
         if self._play_context.connection == 'local':
             provider = load_provider(ce_provider_spec, self._task.args)
-            transport = provider['transport'] or 'cli'
 
             display.vvvv('connection transport is %s' % transport, self._play_context.remote_addr)
 
-            if transport == 'cli':
-                pc = copy.deepcopy(self._play_context)
-                pc.connection = 'network_cli'
-                pc.network_os = 'ce'
-                pc.remote_addr = provider['host'] or self._play_context.remote_addr
-                pc.port = int(provider['port'] or self._play_context.port or 22)
-                pc.remote_user = provider['username'] or self._play_context.connection_user
-                pc.password = provider['password'] or self._play_context.password
-                command_timeout = int(provider['timeout'] or C.PERSISTENT_COMMAND_TIMEOUT)
-                self._task.args['provider'] = provider.update(
-                    host=pc.remote_addr,
-                    port=pc.port,
-                    username=pc.remote_user,
-                    password=pc.password
-                )
-                if self._task.action in ['ce_netconf'] or self._task.action not in CLI_SUPPORTED_MODULES:
-                    pc.connection = 'netconf'
-                display.vvv('using connection plugin %s (was local)' % pc.connection, pc.remote_addr)
-                connection = self._shared_loader_obj.connection_loader.get('persistent', pc, sys.stdin)
-                connection.set_options(direct={'persistent_command_timeout': command_timeout})
+            pc = copy.deepcopy(self._play_context)
+            pc.connection = 'network_cli'
+            pc.network_os = 'ce'
+            pc.remote_addr = provider['host'] or self._play_context.remote_addr
+            pc.port = int(provider['port'] or self._play_context.port or 22)
+            pc.remote_user = provider['username'] or self._play_context.connection_user
+            pc.password = provider['password'] or self._play_context.password
+            command_timeout = int(provider['timeout'] or C.PERSISTENT_COMMAND_TIMEOUT)
+            self._task.args['provider'] = provider.update(
+                host=pc.remote_addr,
+                port=pc.port,
+                username=pc.remote_user,
+                password=pc.password
+            )
+            if self._task.action in ['ce_netconf'] or self._task.action not in CLI_SUPPORTED_MODULES:
+                pc.connection = 'netconf'
+            display.vvv('using connection plugin %s (was local)' % pc.connection, pc.remote_addr)
+            connection = self._shared_loader_obj.connection_loader.get('persistent', pc, sys.stdin)
+            connection.set_options(direct={'persistent_command_timeout': command_timeout})
 
-                socket_path = connection.run()
-                display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
-                if not socket_path:
-                    return {'failed': True,
-                            'msg': 'unable to open shell. Please see: ' +
-                                   'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
+            socket_path = connection.run()
+            display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
+            if not socket_path:
+                return {'failed': True,
+                        'msg': 'unable to open shell. Please see: ' +
+                                'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
 
-                task_vars['ansible_socket'] = socket_path
-                # make sure a transport value is set in args
-                self._task.args['transport'] = transport
-                self._task.args['provider'] = provider
+            task_vars['ansible_socket'] = socket_path
+
+            self._task.args['provider'] = provider
         elif self._play_context.connection in ('netconf', 'network_cli'):
             provider = self._task.args.get('provider', {})
             if any(provider.values()):
