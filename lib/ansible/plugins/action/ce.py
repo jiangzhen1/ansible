@@ -49,8 +49,6 @@ class ActionModule(_ActionModule):
         if self._play_context.connection == 'local':
             provider = load_provider(ce_provider_spec, self._task.args)
 
-            display.vvvv('connection transport is %s' % transport, self._play_context.remote_addr)
-
             pc = copy.deepcopy(self._play_context)
             pc.connection = 'network_cli'
             pc.network_os = 'ce'
@@ -79,7 +77,6 @@ class ActionModule(_ActionModule):
                                 'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
 
             task_vars['ansible_socket'] = socket_path
-
             self._task.args['provider'] = provider
         elif self._play_context.connection in ('netconf', 'network_cli'):
             provider = self._task.args.get('provider', {})
