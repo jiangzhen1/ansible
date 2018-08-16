@@ -89,7 +89,7 @@ class ActionModule(_ActionModule):
                 return {'failed': True, 'msg': "Connection type '%s' is not valid for '%s' module."
                         % (self._play_context.connection, self._task.action)}
 
-        if (self._play_context.connection == 'local' and transport == 'cli' and self._task.action in CLI_SUPPORTED_MODULES) \
+        if (self._play_context.connection == 'local' and self._task.action in CLI_SUPPORTED_MODULES) \
                 or self._play_context.connection == 'network_cli':
             # make sure we are in the right cli context whitch should be
             # enable mode and not config module
